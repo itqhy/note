@@ -8,7 +8,7 @@ public class MySqlValues {
     public final static   String DRIVER_MYSQL = "com.mysql.jdbc.Driver";
     public final static String URL = "jdbc:mysql://localhost:3306/";
     public final static String SETTINGS = "?useUnicode=true&characterEncoding=utf-8&useSSL=false";
-    public final static String DATABASE="sniffer02";
+    public final static String DATABASE="note";
     public final static  String USER = "root";
     public final static String PASSWORD="123456";
     public final static String TABLENAME="note";
@@ -31,8 +31,25 @@ public class MySqlValues {
                                 " PRIMARY KEY ('id') );";
 
     public final static String insertChapterSQL ="INSERT INTO chapter ( 'title', 'content', 'source') " +
-                                                    "VALUES (?, ?, ?); ";
+                                                        "VALUES (?, ?, ?); ";
 
     public final static String insertNoteSQL ="INSERT INTO note ('name', 'auth', 'time', 'remark', 'source')" +
                                                     " VALUES (?, ?, ?, ?,?);";
+
+
+    public static String getDATABASE() {
+        return DATABASE;
+    }
+
+    public static String getTABLENAME() {
+        return TABLENAME;
+    }
+
+    public static String getInsertChapterSQL() {
+        return insertChapterSQL;
+    }
+
+    public static String getInsertNoteSQL() {
+        return insertNoteSQL;
+    }
 }
