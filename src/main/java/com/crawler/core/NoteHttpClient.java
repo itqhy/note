@@ -1,5 +1,6 @@
 package com.crawler.core;
 
+import com.crawler.core.modal.Page;
 import com.crawler.core.parser.AllPageParser;
 import com.crawler.core.task.NoteTask;
 import com.crawler.core.util.HttpClientUtil;
@@ -27,10 +28,12 @@ public class NoteHttpClient {
     private volatile static NoteHttpClient instance;
     private static ThreadPoolExecutor listPageThreadPool;
     private static  ThreadPoolExecutor detailPageThreadPool;
+    private static  ThreadPoolExecutor errorThreadPool;
     private static  ThreadPoolExecutor downloadThreadPool;
     public final static  ArrayBlockingQueue<String> URLS = new ArrayBlockingQueue<String>(9999);
     public final static   ArrayBlockingQueue<String> list =new ArrayBlockingQueue<String>(10000);
     public final static   ArrayBlockingQueue<String> chapterUrls =new ArrayBlockingQueue<String>(10000);
+    public final static  ArrayBlockingQueue<Page> errorList = new ArrayBlockingQueue<Page>(10000);
     private static long startTime = System.currentTimeMillis();
     public static int taskCount = 0;
     public static NoteHttpClient getInstance(){
@@ -65,6 +68,10 @@ public class NoteHttpClient {
                 20L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(5000),
                 new ThreadPoolExecutor.DiscardPolicy(), "downloadThreadPool");
+        errorThreadPool= new SimpleThreadPoolExecutor(1000, 1000,
+                20L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(5000),
+                new ThreadPoolExecutor.DiscardPolicy(), "errorThreadPool");
     }
 
     public  void startCrawler()throws Exception{
@@ -76,13 +83,13 @@ public class NoteHttpClient {
             if(list != null && list.size() > 0){
                 listPageThreadPool.execute(new NoteTask(list.take()));
             }
-            while (true){
+          /*  while (true){
                 if(taskCount == list.size() && !listPageThreadPool.isTerminated()){
                     long time = (System.currentTimeMillis() - startTime ) / 1000;
                     logger.info("耗时：" + time );
                     logger.info("抓取完成");
                 }
-            }
+            }*/
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -98,5 +105,9 @@ public class NoteHttpClient {
 
     public static ThreadPoolExecutor getDownloadThreadPool() {
         return downloadThreadPool;
+    }
+
+    public static ThreadPoolExecutor getErrorThreadPool() {
+        return errorThreadPool;
     }
 }
